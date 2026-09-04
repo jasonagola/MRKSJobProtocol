@@ -1,0 +1,8 @@
+{
+  "protocol_version": "1.0",
+  "cases": [
+    {"name": "new", "same_key": false, "same_hash": false, "status": 202, "replay": false},
+    {"name": "identical_replay", "same_key": true, "same_hash": true, "status": 200, "replay": true},
+    {"name": "changed_input", "same_key": true, "same_hash": false, "status": 409, "error": "idempotency_conflict"}
+  ]
+}

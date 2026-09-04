@@ -1,0 +1,11 @@
+{
+  "protocol_version": "1.0",
+  "legal": [
+    ["queued", "running"], ["queued", "cancelled"], ["queued", "failed"],
+    ["running", "waiting"], ["running", "retrying"], ["running", "succeeded"], ["running", "failed"], ["running", "cancelled"],
+    ["waiting", "queued"], ["waiting", "cancelled"], ["waiting", "failed"],
+    ["retrying", "running"], ["retrying", "cancelled"], ["retrying", "failed"]
+  ],
+  "system_only": [{"from": "running", "to": "running", "event": "job.reclaimed"}],
+  "terminal": ["succeeded", "failed", "cancelled"]
+}

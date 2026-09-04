@@ -1,0 +1,646 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://job-protocol.mrks.dev/schemas/ErrorResponse.schema.json",
+  "$ref": "#/$defs/ErrorResponse",
+  "$defs": {
+    "JobPriority": {
+      "type": "string",
+      "enum": [
+        "interactive",
+        "normal",
+        "background",
+        "bulk"
+      ]
+    },
+    "JobStatus": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "waiting",
+        "retrying",
+        "succeeded",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "WaitingReason": {
+      "type": "string",
+      "enum": [
+        "input_required",
+        "approval_required",
+        "dependency_unavailable",
+        "connection_required",
+        "paused"
+      ]
+    },
+    "JobCorrelationParent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "service",
+        "job_id"
+      ],
+      "properties": {
+        "service": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "job_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      }
+    },
+    "JobCorrelation": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "workflow_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "parent": {
+          "oneOf": [
+            {
+              "$ref": "#/components/schemas/JobCorrelationParent"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "JobSubmission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "priority",
+        "correlation",
+        "input"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "priority": {
+          "$ref": "#/components/schemas/JobPriority"
+        },
+        "deadline_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "correlation": {
+          "$ref": "#/components/schemas/JobCorrelation"
+        },
+        "input": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "JobProgress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phase",
+        "message",
+        "completed_units",
+        "total_units"
+      ],
+      "properties": {
+        "phase": {
+          "type": "string"
+        },
+        "message": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "completed_units": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "total_units": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    "JobTimestamps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "created_at",
+        "queued_at",
+        "started_at",
+        "heartbeat_at",
+        "updated_at",
+        "completed_at",
+        "deadline_at",
+        "expires_at",
+        "next_attempt_at"
+      ],
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "queued_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "started_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "heartbeat_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "deadline_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "next_attempt_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "JobExecution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_generation",
+        "lease_expires_at"
+      ],
+      "properties": {
+        "claim_generation": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "lease_expires_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    },
+    "JobError": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "details": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true
+        }
+      }
+    },
+    "JobLinks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "self",
+        "events",
+        "events_poll",
+        "cancel",
+        "actions"
+      ],
+      "properties": {
+        "self": {
+          "type": "string"
+        },
+        "events": {
+          "type": "string"
+        },
+        "events_poll": {
+          "type": "string"
+        },
+        "cancel": {
+          "type": "string"
+        },
+        "actions": {
+          "type": "string"
+        }
+      }
+    },
+    "JobSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocol_version",
+        "job_id",
+        "job_type",
+        "status",
+        "status_reason",
+        "attempt",
+        "priority",
+        "correlation",
+        "progress",
+        "timestamps",
+        "execution",
+        "result",
+        "error",
+        "links"
+      ],
+      "properties": {
+        "protocol_version": {
+          "type": "string",
+          "const": "1.0"
+        },
+        "job_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "job_type": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/components/schemas/JobStatus"
+        },
+        "status_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "priority": {
+          "$ref": "#/components/schemas/JobPriority"
+        },
+        "correlation": {
+          "$ref": "#/components/schemas/JobCorrelation"
+        },
+        "progress": {
+          "$ref": "#/components/schemas/JobProgress"
+        },
+        "timestamps": {
+          "$ref": "#/components/schemas/JobTimestamps"
+        },
+        "execution": {
+          "$ref": "#/components/schemas/JobExecution"
+        },
+        "result": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true
+        },
+        "error": {
+          "oneOf": [
+            {
+              "$ref": "#/components/schemas/JobError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "links": {
+          "$ref": "#/components/schemas/JobLinks"
+        }
+      }
+    },
+    "JobSubmissionReceipt": {
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/JobSnapshot"
+        },
+        {
+          "type": "object",
+          "required": [
+            "idempotent_replay"
+          ],
+          "properties": {
+            "idempotent_replay": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
+    },
+    "JobEventType": {
+      "type": "string",
+      "enum": [
+        "job.created",
+        "job.queued",
+        "job.started",
+        "job.progress",
+        "job.waiting",
+        "job.retry_scheduled",
+        "job.reclaimed",
+        "job.cancel_requested",
+        "job.succeeded",
+        "job.failed",
+        "job.cancelled"
+      ]
+    },
+    "JobEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_id",
+        "job_id",
+        "type",
+        "occurred_at",
+        "attempt",
+        "data"
+      ],
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "job_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "type": {
+          "$ref": "#/components/schemas/JobEventType"
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "JobEventPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "snapshot",
+        "events",
+        "next_cursor",
+        "has_more"
+      ],
+      "properties": {
+        "snapshot": {
+          "$ref": "#/components/schemas/JobSnapshot"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/JobEvent"
+          }
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        },
+        "has_more": {
+          "type": "boolean"
+        }
+      }
+    },
+    "JobAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "data"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "input.provide",
+            "approval.resolve",
+            "job.resume"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "JobActionReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action_id",
+        "idempotent_replay",
+        "job"
+      ],
+      "properties": {
+        "action_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "idempotent_replay": {
+          "type": "boolean"
+        },
+        "job": {
+          "$ref": "#/components/schemas/JobSnapshot"
+        }
+      }
+    },
+    "JobTypeCapability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "input_schema",
+        "result_schema",
+        "actions"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "input_schema": {
+          "type": "string"
+        },
+        "result_schema": {
+          "type": "string"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "JobCapabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocol_versions",
+        "priorities",
+        "statuses",
+        "event_delivery",
+        "lease_defaults",
+        "retention",
+        "job_types"
+      ],
+      "properties": {
+        "protocol_versions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "priorities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/JobPriority"
+          }
+        },
+        "statuses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/JobStatus"
+          }
+        },
+        "event_delivery": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "sse",
+              "poll"
+            ]
+          }
+        },
+        "lease_defaults": {
+          "type": "object",
+          "required": [
+            "duration_seconds",
+            "heartbeat_seconds"
+          ],
+          "properties": {
+            "duration_seconds": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "heartbeat_seconds": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "retention": {
+          "type": "object",
+          "required": [
+            "terminal_seconds"
+          ],
+          "properties": {
+            "terminal_seconds": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            }
+          }
+        },
+        "job_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/JobTypeCapability"
+          }
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "error"
+      ],
+      "properties": {
+        "error": {
+          "$ref": "#/components/schemas/JobError"
+        }
+      }
+    }
+  }
+}
