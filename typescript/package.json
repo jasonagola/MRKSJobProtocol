@@ -1,13 +1,13 @@
 {
   "name": "@mrks/job-protocol",
   "version": "1.0.0",
+  "private": true,
   "description": "TypeScript models and client for MRKS Durable Job Protocol 1.0",
   "type": "module",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist"],
-  "publishConfig": {"access": "public"},
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepublishOnly": "npm run build"

@@ -1,15 +1,17 @@
 # MRKS Job Protocol
 
-`MRKS Job Protocol 1.0` is the language-neutral contract used to submit,
-observe, recover, and cancel durable work across MRKS services.
+`MRKS Job Protocol 1.0` is the internal language-neutral contract used to
+submit, observe, recover, and cancel durable work across MRKS services.
 
-The repository publishes two clients from the same tagged specification:
+The repository generates two clients from the same tagged specification:
 
 - Python: `mrks-job-protocol`
 - TypeScript: `@mrks/job-protocol`
 
 OpenAPI is authoritative. Generated language models and standalone JSON Schema
-documents are checked in so consumers can pin and review the exact wire shape.
+documents are checked in so internal consumers can pin and review the exact
+wire shape. MRKS services pin the repository tag or commit in CI; this project
+is not published to public npm or PyPI registries.
 
 ## Development
 
